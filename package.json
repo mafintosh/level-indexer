@@ -1,0 +1,21 @@
+{
+  "name": "level-indexer",
+  "version": "0.0.0",
+  "description": "WIP - nothing to see here",
+  "main": "index.js",
+  "dependencies": {
+    "defined": "0.0.0",
+    "stream-collector": "^1.0.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/level-indexer.git"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/level-indexer/issues"
+  },
+  "homepage": "https://github.com/mafintosh/level-indexer"
+}
