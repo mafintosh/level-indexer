@@ -1,22 +1,20 @@
 var indexer = require('./')
 var db = require('memdb')()
 
-var name = indexer(db, 'age')
+var name = indexer(db, ['country', 'age'])
 
-name.add({username:'mafintosh', name:'mathias', age:27}, 'mafintosh')
-name.add({username:'watson', name:'thomas', age:30}, 'watson')
-name.add({username:'sorribas', name:'eduardo', age:29}, 'sorribas')
-
-// name.get({age:30}, function() {
-
-// })
+name.add({key:'mafintosh', name:'mathias', age:27, country:'denmark'})
+name.add({key:'watson', name:'thomas', age:30, country:'denmark'})
+name.add({key:'sorribas', name:'eduardo', age:23, country:'dominican republic'})
 
 var stream = name.find({
   gt: {
-    age: 30
+    country: 'denmark',
+    age: 20,
   },
   lt: {
-    age: 50
+    country: 'denmark',
+    age: 30
   }
 })
 

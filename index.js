@@ -2,7 +2,6 @@ var bytewise = require('bytewise')
 var collect = require('stream-collector')
 var through = require('through2')
 var pump = require('pump')
-var defined = require('defined')
 
 module.exports = function(db, props, opts) {
   if (!Array.isArray(props)) props = [props]
@@ -14,12 +13,26 @@ module.exports = function(db, props, opts) {
 
   that.keys = props
 
-  that.add = function(doc, id, cb) {
+  that.key = function(doc, id) {
+    if (!id) id = doc.key
+    if (!id) throw new Error('No key defined for this document')
+
     var keys = props.map(function(n) {
       return doc[n] !== undefined ? bytewise.encode(doc[n]).toString('hex') : ''
     })
 
-    db.put(keys.join(sep)+id, id, cb)
+    return keys.join(sep)+sep+'-'+id
+  }
+
+  that.add = function(doc, id, cb) {
+    if (typeof id === 'function') return that.add(doc, null, id)
+    if (!id) id = doc.key
+    db.put(that.key(doc, id), id, cb)
+  }
+
+  that.remove = function(doc, id, cb) {
+    if (typeof id === 'function') return that.remove(doc, null, id)
+    db.del(that.key(doc, id), cb)
   }
 
   that.findOne = function(opts, cb) {
@@ -27,7 +40,7 @@ module.exports = function(db, props, opts) {
     if (!opts) opts = {}
 
     opts.limit = 1
-    that.find(opts, function(err, results) {
+    return that.find(opts, cb && function(err, results) {
       if (err) return cb(err)
       cb(null, results.length ? results[0] : null)
     })
@@ -56,7 +69,7 @@ module.exports = function(db, props, opts) {
     var xopts = {
       lte: lte.length ? lte.join(sep)+sep+'\xff' : undefined,
       gte: gte.length ? gte.join(sep)+sep : undefined,
-      lt: lt.length ? lt.join(sep)+sep+'\xff' : undefined,
+      lt: lt.length ? lt.join(sep)+sep+'\x00' : undefined,
       gt: gt.length ? gt.join(sep)+sep : undefined,
       limit: opts.limit || -1,
       reverse: opts.reverse,
