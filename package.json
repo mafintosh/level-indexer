@@ -1,7 +1,7 @@
 {
   "name": "level-indexer",
   "version": "0.0.0",
-  "description": "WIP - nothing to see here",
+  "description": "Generic indexer for leveldb. Only stores document keys for space efficiency.",
   "main": "index.js",
   "dependencies": {
     "bytewise": "^0.7.1",
