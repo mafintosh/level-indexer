@@ -42,6 +42,8 @@ stream.on('data', function(key) {
 })
 ```
 
+The stored index is prefix with the index key names which means you can use the same levelup instance to store multiple indexes.
+
 ## API
 
 #### `index = indexer(db, [prop1, prop2, ...], [options])`

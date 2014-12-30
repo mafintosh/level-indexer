@@ -15,7 +15,7 @@ module.exports = function(db, props, opts) {
 
   var sep = opts.sep || '!'
   var map = opts.map && writer(opts.map)
-  var prefix
+  var prefix = opts.prefix || props.join(sep)+sep
   var that = {}
 
   that.keys = props
@@ -28,7 +28,7 @@ module.exports = function(db, props, opts) {
       return doc[n]
     })
 
-    return bytewise.encode(keys).toString('hex')+sep+id
+    return prefix+bytewise.encode(keys).toString('hex')+sep+id
   }
 
   that.add = function(doc, id, cb) {
@@ -61,14 +61,14 @@ module.exports = function(db, props, opts) {
 
   var encode = function(val) {
     if (val === undefined) return null
-    if (Array.isArray(val)) return bytewise.encode(val).toString('hex')
-    if (typeof val !== 'object') return bytewise.encode([val]).toString('hex')
+    if (Array.isArray(val)) return prefix+bytewise.encode(val).toString('hex')
+    if (typeof val !== 'object') return prefix+bytewise.encode([val]).toString('hex')
 
     var keys = props.map(function(n) {
       return val[n]
     })
 
-    return bytewise.encode(keys).toString('hex')
+    return prefix+bytewise.encode(keys).toString('hex')
   }
 
   that.find = function(opts, cb) {
