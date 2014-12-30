@@ -18,10 +18,10 @@ module.exports = function(db, props, opts) {
     if (!id) throw new Error('No key defined for this document')
 
     var keys = props.map(function(n) {
-      return doc[n] !== undefined ? bytewise.encode(doc[n]).toString('hex') : ''
+      return doc[n]
     })
 
-    return keys.join(sep)+sep+'-'+id
+    return bytewise.encode(keys).toString('hex')+sep+id
   }
 
   that.add = function(doc, id, cb) {
@@ -35,50 +35,58 @@ module.exports = function(db, props, opts) {
     db.del(that.key(doc, id), cb)
   }
 
+  var normalizeQuery = function(opts) {
+    if (!opts) return {}
+    return typeof opts === 'object' && !Array.isArray(opts) ? opts : {gte:opts, lte:opts}
+  }
+
   that.findOne = function(opts, cb) {
     if (typeof opts === 'function') return that.findOne(null, opts)
-    if (!opts) opts = {}
-
+  
+    opts = normalizeQuery(opts)
     opts.limit = 1
+
     return that.find(opts, cb && function(err, results) {
       if (err) return cb(err)
       cb(null, results.length ? results[0] : null)
     })
   }
 
-  that.find = function(opts, cb) {
-    if (typeof opts === 'function') return that.find(null, opts)
-    if (!opts) opts = {}
+  var encode = function(val) {
+    if (val === undefined) return null
+    if (Array.isArray(val)) return bytewise.encode(val).toString('hex')
+    if (typeof val !== 'object') return bytewise.encode([val]).toString('hex')
 
-    var lte = []
-    var gte = []
-    var gt = []
-    var lt = []
-
-    var add = function(list, val) {
-      list.push(val !== undefined ? bytewise.encode(val).toString('hex') : '')
-    }
-
-    props.forEach(function(n) {
-      if (opts.gte) add(gte, opts.gte[n])
-      if (opts.lte) add(lte, opts.lte[n])
-      if (opts.gt) add(gt, opts.gt[n])
-      if (opts.lt) add(lt, opts.lt[n])
+    var keys = props.map(function(n) {
+      return val[n]
     })
 
+    return bytewise.encode(keys).toString('hex')
+  }
+
+  that.find = function(opts, cb) {
+    if (typeof opts === 'function') return that.find(null, opts)
+    opts = normalizeQuery(opts)
+
+    var lte = encode(opts.lte)
+    var gte = encode(opts.gte)
+    var gt = encode(opts.gt)
+    var lt = encode(opts.lt)
+
     var xopts = {
-      lte: lte.length ? lte.join(sep)+sep+'\xff' : undefined,
-      gte: gte.length ? gte.join(sep)+sep : undefined,
-      lt: lt.length ? lt.join(sep)+sep+'\x00' : undefined,
-      gt: gt.length ? gt.join(sep)+sep : undefined,
+      lte: lte ? lte+sep+'\xff' : undefined,
+      gte: gte ? gte+sep : undefined,
+      lt: lt ? lt+sep+'\x00' : undefined,
+      gt: gt ? gt+sep : undefined,
       limit: opts.limit || -1,
       reverse: opts.reverse,
       valueEncoding: 'utf-8'
     }
 
     var rs = db.createValueStream(xopts)
+    var m = opts.map || map
 
-    return collect(map ? pump(rs, through.obj(map)) : rs, cb)
+    return collect(m ? pump(rs, through.obj(m)) : rs, cb)
   }
 
   return that

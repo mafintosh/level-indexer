@@ -92,6 +92,28 @@ var stream = index.find({
 })
 ```
 
+Optionally you can specify the ranges using arrays
+
+``` js
+var stream = index.find({
+  gt: ['denmark', 20],
+  lt: ['denmark', 50]
+})
+```
+
+Or if you do not care about ranges
+
+``` js
+var stream = index.find(['denmark', 20])
+
+// equivalent to
+
+var stream = index.find({
+  gte: ['denmark', 20],
+  lte: ['denmark', 20]
+})
+```
+
 The stream will contain the keys of the documents that where found in the index.
 Use `options.map` to map the to the document values.
 
