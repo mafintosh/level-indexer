@@ -33,6 +33,10 @@ var stream = country.find({
   lte:{country:'denmark'}
 })
 
+// or using the shorthand syntax
+
+var stream = country.find('denmark')
+
 stream.on('data', function(key) {
   console.log(key) // will print mafintosh
 })
