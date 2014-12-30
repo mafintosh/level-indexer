@@ -6,6 +6,8 @@ Generic indexer for leveldb. Only stores document keys for space efficiency.
 npm install level-indexer
 ```
 
+[![build status](http://img.shields.io/travis/mafintosh/level-indexer.svg?style=flat)](http://travis-ci.org/mafintosh/level-indexer)
+
 ## Usage
 
 ``` js
