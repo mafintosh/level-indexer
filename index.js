@@ -3,12 +3,19 @@ var collect = require('stream-collector')
 var through = require('through2')
 var pump = require('pump')
 
+var writer = function(fn) {
+  return function(data, enc, cb) {
+    fn(data, cb)
+  }
+}
+
 module.exports = function(db, props, opts) {
   if (!Array.isArray(props)) props = [props]
   if (!opts) opts = {}
 
   var sep = opts.sep || '!'
-  var map = opts.map && function(data, enc, cb) { map(data, cb) }
+  var map = opts.map && writer(opts.map)
+  var prefix
   var that = {}
 
   that.keys = props
@@ -84,7 +91,7 @@ module.exports = function(db, props, opts) {
     }
 
     var rs = db.createValueStream(xopts)
-    var m = opts.map || map
+    var m = opts.map ? writer(opts.map) : map
 
     return collect(m ? pump(rs, through.obj(m)) : rs, cb)
   }
