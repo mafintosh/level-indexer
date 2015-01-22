@@ -57,3 +57,22 @@ tape('compound index ranges', function(t) {
     t.end()
   })
 })
+
+tape('single index with map', function(t) {
+  var db = memdb()
+  var index = indexer(db, ['name'], {
+    map: function (key, cb) {
+      db.get(key, cb)
+    }
+  })
+
+  index.add({key:'mafintosh', name:'mathias', age:27, country:'denmark'})
+  index.add({key:'watson', name:'thomas', age:30, country:'denmark'})
+  index.add({key:'sorribas', name:'eduardo', age:23, country:'dominican republic'})
+
+  index.find('mathias', function(err, keys) {
+    t.notOk(err, 'no err')
+    console.log(err)
+    t.end()
+  })
+})
