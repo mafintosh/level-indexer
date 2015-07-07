@@ -57,3 +57,31 @@ tape('compound index ranges', function(t) {
     t.end()
   })
 })
+
+tape('find one', function(t) {
+  var index = indexer(memdb(), ['name'])
+
+  index.add({key:'mafintosh', name:'mathias', age:27, country:'denmark'})
+  index.add({key:'watson', name:'thomas', age:30, country:'denmark'})
+  index.add({key:'sorribas', name:'eduardo', age:23, country:'dominican republic'})
+
+  index.findOne('mathias', function(err, keys) {
+    t.notOk(err)
+    t.same(keys, 'mafintosh')
+    t.end()
+  })
+})
+
+tape('find one no result', function(t) {
+  var index = indexer(memdb(), ['name'])
+
+  index.add({key:'mafintosh', name:'mathias', age:27, country:'denmark'})
+  index.add({key:'watson', name:'thomas', age:30, country:'denmark'})
+  index.add({key:'sorribas', name:'eduardo', age:23, country:'dominican republic'})
+
+  index.findOne('unknown', function(err, keys) {
+    t.ok(err)
+    t.ifError(keys)
+    t.end()
+  })
+})
