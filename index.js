@@ -82,9 +82,9 @@ module.exports = function(db, props, opts) {
 
     var xopts = {
       lte: lte ? lte+sep+'\xff' : undefined,
-      gte: gte ? gte+sep : undefined,
+      gte: gte ? gte+sep+'\x00' : undefined,
       lt: lt ? lt+sep+'\x00' : undefined,
-      gt: gt ? gt+sep : undefined,
+      gt: gt ? gt+sep+'\xff' : undefined,
       limit: opts.limit || -1,
       reverse: opts.reverse,
       valueEncoding: 'utf-8'
