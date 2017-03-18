@@ -1,6 +1,6 @@
 {
   "name": "level-indexer",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Generic indexer for leveldb. Only stores document keys for space efficiency.",
   "main": "index.js",
   "scripts": {
