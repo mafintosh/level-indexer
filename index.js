@@ -49,13 +49,14 @@ module.exports = function(db, props, opts) {
 
   that.findOne = function(opts, cb) {
     if (typeof opts === 'function') return that.findOne(null, opts)
-  
+
     opts = normalizeQuery(opts)
     opts.limit = 1
 
     return that.find(opts, cb && function(err, results) {
       if (err) return cb(err)
-      cb(null, results.length ? results[0] : null)
+      if (!results.length) return cb(new Error("Index not found for opts:" + opts))
+      else return cb(null, results[0])
     })
   }
 
