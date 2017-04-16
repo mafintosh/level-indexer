@@ -49,7 +49,7 @@ module.exports = function(db, props, opts) {
 
   that.findOne = function(opts, cb) {
     if (typeof opts === 'function') return that.findOne(null, opts)
-  
+
     opts = normalizeQuery(opts)
     opts.limit = 1
 
@@ -70,6 +70,7 @@ module.exports = function(db, props, opts) {
 
     return prefix+bytewise.encode(keys).toString('hex')
   }
+  that.encode = encode
 
   that.find = function(opts, cb) {
     if (typeof opts === 'function') return that.find(null, opts)
